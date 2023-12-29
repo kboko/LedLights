@@ -11,7 +11,7 @@ class MovementElement():
         self.state = 0
         self.collector = collector
         self.io=io
-        self.publish_movement=False
+        self.publish_movement = True
 
     def WorkThread(self, name, args):
         if self.pin:
@@ -47,11 +47,7 @@ class MovementElement():
         pass
     
     def MqttReceive(self, topic, msg):
-        if "notify_movement" in topic:
-            if 'ON' in msg :
-                self.publish_movement = True
-            else:
-                self.publish_movement = False
+        pass
 
     def MqttPublish(self, val):
         if self.publish_movement:
@@ -76,20 +72,6 @@ class MovementElement():
         self.collector.PublichMqttEvent ("{}/{}".format (topic, "config"), json.dumps(config))
         self.collector.PublichMqttEvent ("{}/{}".format (topic, "state"), "ON" if self.publish_movement else "OFF")
 
-        config = {}
-        topic = "homeassistant/switch/{}/publishmovement".format (self.collector.name)
-        unique_id = self.collector.name + "_publishmovement"
-        config["device"] = device
-        config["unique_id"] = unique_id
-
-        config["name"] =  "Notify movement"
-        
-        config["state_topic"] = "{}/{}".format (topic, "state")
-        config["command_topic"] = "{}/{}".format (topic, "set")
-                    
-        self.collector.PublichMqttEvent ("{}/{}".format (topic, "config"), json.dumps(config))
-        self.collector.PublichMqttEvent ("{}/{}".format (topic, "state"), "ON" if self.publish_movement else "OFF")
-        self.collector.SubscribeMqtt(config["command_topic"])
 
     def GetMqttProp(self):
-        return "publishmovement" 
+        return "" 

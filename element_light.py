@@ -182,18 +182,17 @@ class LightElement():
         pass
     
     def MqttReceive(self, topic, msg):
-        print ("RECEIVE", topic, msg)
-        if "virt_button" in topic:
+        if "led" in topic:
             self.events.put(Event.USER_ACTION)
-        elif "on_time" in topic:
+        elif "ontime" in topic:
             self.on_time = int (float(msg))
-        elif "to_on" in topic:
+        elif "dimm_to_on" in topic:
             self.dimm_to_on = int (float(msg))
-        elif "to_off" in topic:
+        elif "dimm_to_off" in topic:
             self.dimm_to_off = int (float(msg))
-        elif "power" in topic:
+        elif "max_power" in topic:
             self.max_power = int (float(msg))
-        elif "threshold" in topic:
+        elif "brightness_threshold" in topic:
             self.brightness_threshold = int (float(msg))
         g_logger.info("M-ID={}:{} T={} OT={} DIMM={}:{} MP={}".format(hex(id(self)), self.type, topic, self.on_time, self.dimm_to_on, self.dimm_to_off, self.max_power))
 

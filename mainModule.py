@@ -79,16 +79,12 @@ def mqtt_on_message(client, userdata, msg):
 	global g_unit, g_client, g_stat_interval, DEBUG
 	if DEBUG:
 		print("Received message '" + str(msg.payload) + "' on topic '" + msg.topic + "' with QoS " + str(msg.qos))
-	print("Received message '" + str(msg.payload) + "' on topic '" + msg.topic + "' with QoS " + str(msg.qos))
 	splitted = msg.topic.split("/")
-
 	if splitted[0] != "homeassistant":
 		return
 	for circ in g_unit:
-		
 		if splitted[2] == circ.name:
 			for elem in circ.elements:
-				print (splitted[3] ,elem, elem.GetMqttProp())		
 				if splitted[3] in  elem.GetMqttProp():
 					circ.AddEvent( "mqtt", msg.topic, msg.payload)
 					
