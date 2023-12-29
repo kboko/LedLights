@@ -21,7 +21,7 @@ class MovementElement():
             if c_state != self.state :
                 self.state = c_state
                 self.collector.AddEvent (self, "movement", self.state)
-                self.MqttPublish("ON" if self.state else "OFF" )
+                self.MqttPublish()
             time.sleep(0.1)
 
     def WorkThreadStart(self):      
@@ -49,9 +49,9 @@ class MovementElement():
     def MqttReceive(self, topic, msg):
         pass
 
-    def MqttPublish(self, val):
-        if self.publish_movement:
-            self.collector.PublichMqttEvent ("{}".format(self.type), val)
+    def MqttPublish(self):
+        topic = "homeassistant/binary_sensor/{}/movement/state".format (self.collector.name)
+        self.collector.PublichMqttEvent (topic, "ON" if self.state else "OFF" )
     
     def MqttInitialPublishOnReady(self):    
         config = {}
@@ -67,10 +67,10 @@ class MovementElement():
         
         config["state_class"] = "measurement"
         config["state_topic"] = "{}/{}".format (topic, "state")
-        config["value_template"] =  "{%if is_state(entity_id,\"on\")-%}OFF{%-else-%}ON{%-endif%}"   
+        #config["value_template"] =  "{%if is_state(entity_id,\"on\")-%}OFF{%-else-%}ON{%-endif%}"   
 
         self.collector.PublichMqttEvent ("{}/{}".format (topic, "config"), json.dumps(config))
-        self.collector.PublichMqttEvent ("{}/{}".format (topic, "state"), "ON" if self.publish_movement else "OFF")
+        self.collector.PublichMqttEvent ("{}/{}".format (topic, "state"), "OFF")
 
 
     def GetMqttProp(self):

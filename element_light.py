@@ -231,11 +231,11 @@ class LightElement():
         self.collector.PublichMqttEvent (config["state_topic"], json.dumps({"state":"OFF", "brightness":0}))
         self.collector.SubscribeMqtt(config["command_topic"])
 
-        for param in [["ontime", "ON Time", "Sec", self.on_time], 
-                      ["dimm_to_on", "Dimm to ON", "Sec", self.dimm_to_on], 
-                      ["dimm_to_off", "Dimm to OFF", "Sec", self.dimm_to_off], 
-                      ["max_power", "MAX Power", "1-255", self.max_power],
-                      ["brightness_threshold", "On Threshold", "Val", self.brightness_threshold]]:
+        for param in [["ontime", "ON Time", "Sec", self.on_time, 0, 300], 
+                      ["dimm_to_on", "Dimm to ON", "Sec", self.dimm_to_on, 0, 10], 
+                      ["dimm_to_off", "Dimm to OFF", "Sec", self.dimm_to_off, 0, 10], 
+                      ["max_power", "MAX Power", "1-255", self.max_power, 1, 255],
+                      ["brightness_threshold", "On Threshold", "Val", self.brightness_threshold, 0, 30]]:
             config = {}
             topic = "homeassistant/number/{}/{}".format (self.collector.name, param[0])
             unique_id = self.collector.name + "_" + param[0]
@@ -246,6 +246,9 @@ class LightElement():
             config["unit_of_measurement"] =  param[2]
             config["state_topic"] = "{}/{}".format (topic, "state")
             config["command_topic"] = "{}/{}".format (topic, "set")
+
+            config["min"] =  param[4]
+            config["max"] =  param[5]
                     
             self.collector.PublichMqttEvent ("{}/{}".format (topic, "config"), json.dumps(config))
             self.collector.PublichMqttEvent ("{}/{}".format (topic, "state"), param[3])
