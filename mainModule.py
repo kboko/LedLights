@@ -78,7 +78,7 @@ def mqtt_on_connect (client, userdata, flags, rc):
 def mqtt_on_message(client, userdata, msg):
 	global g_unit, g_client, g_stat_interval, DEBUG
 	if DEBUG:
-		print("Received message '" + str(msg.payload) + "' on topic '" + msg.topic + "' with QoS " + str(msg.qos))
+		print("RECEIVE '" + str(msg.payload) + "' on topic '" + msg.topic + "' with QoS " + str(msg.qos))
 	splitted = msg.topic.split("/")
 	if splitted[0] != "homeassistant":
 		return
@@ -88,11 +88,6 @@ def mqtt_on_message(client, userdata, msg):
 				if splitted[3] in  elem.GetMqttProp():
 					circ.AddEvent( "mqtt", msg.topic, msg.payload)
 					
-				
-	
-
-
-	
 
 def ConstructUnit(config):
 	global g_unit
@@ -146,12 +141,12 @@ class Circuit():
 			print ("PULISH {}\n \t{}".format (topic , value))
 		if not isinstance(value, bytes):
 			value = bytes (str(value).encode("utf-8"))
-		print ("PULISH {}\n \t{}\n".format (topic , value))
 		infot = g_client.publish(topic, value, qos=1, retain=True)
 		
 
 	def SubscribeMqtt(self, topic):
-		print ("SUBSCRIBE", topic)
+		if DEBUG:
+			print ("SUBSCRIBE", topic)
 		g_client.subscribe(topic)
 
 	def CircuitThread(self):
