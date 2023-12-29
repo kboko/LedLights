@@ -41,9 +41,9 @@ def mqtt_init():
 	g_client.on_message = mqtt_on_message
 	#g_client.on_publish = mqtt_on_publish
 	g_client.on_log = mqtt_log
-	g_client.username_pw_set("mqtt_user", "koko")
+	g_client.username_pw_set("mqtt_user", "mqtt_user")
 	try:
-		g_client.connect("192.168.0.240")
+		g_client.connect("192.168.0.5")
 	except:
 		print "No mtqq server" 
 		return
