@@ -49,16 +49,14 @@ def mqtt_init():
 		return
 	g_client.loop_start()
 
-def mqtt_log(client, userdata, level, buf):
-	print client, userdata, level, buf 
-	pass
 
 def mqtt_on_publish(mqttc, obj, mid):
     print(str(obj) + str(mid))
     pass
 
 def mqtt_log(client, userdata, level, buf):
-	print client, userdata, level, buf 
+	#print client, userdata, level, buf 
+	pass
 
 def mqtt_deinit():
 	global g_client
@@ -74,32 +72,23 @@ def mqtt_on_connect (client, userdata, flags, rc):
 	#start the I-m here 
 	
 
-def mqtt_pub_message(userdata, msg):
-	global g_client, g_config, DEBUG
-	name = g_config["Name"]
-	if DEBUG:
-		print ("PULISH Svetlina/{}/{} {}".format (name , userdata , msg))
-	if not isinstance(msg, bytes):
-		msg = bytes (str(msg).encode("utf-8"))
 
-	infot = g_client.publish("Svetlina/{}/{}".format(name, userdata), msg, qos=1, retain=True)
-	time.sleep(.1)
 	
 # The callback for when a PUBLISH message is received from the server.
 def mqtt_on_message(client, userdata, msg):
 	global g_unit, g_client, g_stat_interval, DEBUG
 	if DEBUG:
 		print("Received message '" + str(msg.payload) + "' on topic '" + msg.topic + "' with QoS " + str(msg.qos))
-
+	print("Received message '" + str(msg.payload) + "' on topic '" + msg.topic + "' with QoS " + str(msg.qos))
 	splitted = msg.topic.split("/")
 
-	if splitted[0] != "Svetlina":
+	if splitted[0] != "homeassistant":
 		return
 	for circ in g_unit:
-
+		
 		if splitted[2] == circ.name:
 			for elem in circ.elements:
-				print splitted[3] ,circ.name
+				print (splitted[3] ,elem, elem.GetMqttProp())		
 				if splitted[3] in  elem.GetMqttProp():
 					circ.AddEvent( "mqtt", msg.topic, msg.payload)
 					
@@ -107,12 +96,6 @@ def mqtt_on_message(client, userdata, msg):
 	
 
 
-def mqtt_subscribe(topic):
-	global g_client, g_config, DEBUG
-	name = g_config["Name"]
-	if DEBUG:
-		print ("SUBCRIBE Svetlina/{}/{}".format (name , topic))
-	g_client.subscribe("Svetlina/{}/{}".format(name, topic))
 	
 
 def ConstructUnit(config):
@@ -162,14 +145,20 @@ class Circuit():
 		ev = Event (src, name, value)
 		self.eventQueue.put(ev)
 
-	def PublichMqttEvent(self, path, value):
-		mqtt_pub_message ( "{}/{}".format (self.name, path), value)
+	def PublichMqttEvent(self, topic, value):
+		if DEBUG:
+			print ("PULISH {}\n \t{}".format (topic , value))
+		if not isinstance(value, bytes):
+			value = bytes (str(value).encode("utf-8"))
+		print ("PULISH {}\n \t{}\n".format (topic , value))
+		infot = g_client.publish(topic, value, qos=1, retain=True)
+		
 
-	def SubscribeMqtt(self, path):
-		mqtt_subscribe ( "{}/{}".format (self.name, path))
+	def SubscribeMqtt(self, topic):
+		print ("SUBSCRIBE", topic)
+		g_client.subscribe(topic)
 
 	def CircuitThread(self):
-		global DEBUG
 		for elem in self.elements:
 			if elem:
 				elem.WorkThreadStart()

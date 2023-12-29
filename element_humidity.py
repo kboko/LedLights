@@ -62,4 +62,4 @@ class HumidityElement():
 		self.collector.PublichMqttEvent ("humidity", self.humidity)
 
 	def GetMqttProp(self):
-		return "temperature,humidity"
+		return "temperature, humidity"
