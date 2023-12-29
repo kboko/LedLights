@@ -22,8 +22,8 @@ import psutil
 import pigpio
 
 import helpers
-#DEBUG = True
-DEBUG=False
+DEBUG = True
+#DEBUG=False
 # Globals
 g_config = ""
 g_my_mac = 0
