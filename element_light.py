@@ -249,7 +249,7 @@ class LightElement():
 
             config["min"] =  param[4]
             config["max"] =  param[5]
-                    
+            config["mode"] = "box"        
             self.collector.PublichMqttEvent ("{}/{}".format (topic, "config"), json.dumps(config))
             self.collector.PublichMqttEvent ("{}/{}".format (topic, "state"), param[3])
             self.collector.SubscribeMqtt(config["command_topic"])
